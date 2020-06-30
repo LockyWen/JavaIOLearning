@@ -196,5 +196,106 @@ Let's see the code. Yeaaaaaaah! (Lindsey's_voice.wav)
         }
     }
 
+Well now you know how to create or delete a file or a directory. Next,\
+####Let's iterate through a directory and see what it is. 
+
+Create a directory in this path, named as ListMethod with a directory aaa and a text file bbb.txt in it. 
+
+We intruduce a new method File.list(); to check the contents in ListMethod, which returns 
+a String[] with all file/directory names. 
+
+Another more amazing method is File.listFile(); which will return a list of File Objects.
+
+Look at the code and you should see how it works. 
+
+    package Iteration_and_reading;
+    
+    import java.io.File;
+    
+    public class DirectoryReading {
+        public static File directs = new File("ListMethod");
+    
+        public static void main(String[] args) {
+            String[] arr = directs.list();
+            for(String x: arr){
+                System.out.println(x);
+            }
+            
+            File[] arr2 = directs.listFiles();
+                for(File y: arr2){
+                System.out.println(y);
+             }
+        }
+    } 
+
+Please note that list() or listFile() never works for file and will return a NullPointerException. 
+If a pathname DNE, then also gets a NullPointerException. 
+
+#### Use Recursion to search all the file in a directory
+
+I hope that you know recursion, if you don't know. Please go to my GitHub https://github.com/LockyWen/introcutionToAlgorithms_PracticeCodeJava
+. Check Chapter 2.3 and then you should know. 
+
+Then, it is very simple to use recursion to check all files in a directory. 
+
+Now let's reuse the file ListMethod again. We see that there are many levels of 
+files/directories and it makes no sense for you to use the listFile() to search for all files in it. 
+So What should you do? Recursion works!!!
+
+    package Iteration_and_reading;
+    
+    import java.io.File;
+    import java.util.ArrayList;
+    
+    public class Recursion_read_files {
+        public static File file = new File("ListMethod");
+        
+        //main method 
+        public static void main(String[] args) {
+            Recursion re = new Recursion();
+            System.out.println(re.readFile(file));
+        }
+    }
+    
+    class Recursion{
+    
+        public ArrayList<File> readFile(File fileInput){
+            ArrayList<File> result = new ArrayList<>();  
+    
+            if(!fileInput.isDirectory()){
+                result.add(fileInput);
+                return result;                              // Base Case: if it is a file, then add to the list
+            }else{
+                for(File y: fileInput.listFiles()){
+                    result.addAll(readFile(y));             // Inductive Step: readFile returns the files of the directory y, 
+                                                            // add it to the result ArrayList<>
+                }
+            }
+    
+            return result;
+        }
+    }
+
+Then you should go over all files in the directory ListMethod. Pretty Cool Huh!!
+
+### FileFilter and FilenameFilter
+
+Let's see two filters in Java.io.File. They are FileFilter and FilenameFilter and both are interfaces. 
+
+Let's see FileFilter first, which has only one method named accept(), returning a boolean value. 
+
+This  interface serves as a filter to filt the File(Object).
+
+However, FilenameFilter's only method accept has two parameters, which are (File) directory and (String) filename.
+
+Let's see how it works. 
+
+Firstly, we note that FileFilter is an interface, then we should make a new Class named FileFilterImplement which implements the Filefilter. 
+
+Let's see the code!!
+
+
+
+
 
 
