@@ -278,7 +278,7 @@ So What should you do? Recursion works!!!
 
 Then you should go over all files in the directory ListMethod. Pretty Cool Huh!!
 
-### FileFilter and FilenameFilter
+### FileFilter and FilenameFilter and Anonymous Class
 
 Let's see two filters in Java.io.File. They are FileFilter and FilenameFilter and both are interfaces. 
 
@@ -293,6 +293,181 @@ Let's see how it works.
 Firstly, we note that FileFilter is an interface, then we should make a new Class named FileFilterImplement which implements the Filefilter. 
 
 Let's see the code!!
+
+    public class FileFilterImplement implements FileFilter {
+        @Override
+    
+        /**
+         * accept will get rid of all files that is not a txt
+         */
+        public boolean accept(File pathname) {
+            return pathname.isDirectory() || (pathname.getAbsolutePath().endsWith(".txt"));
+        }
+    }
+    
+This filter only has one method accept. If it returns true then we can maintain the 
+pathname or else we will get rid of it. 
+
+But why we need to check whether it is a directory? This is because a directory never ends with ".txt" but it may have text files in it. 
+Recall that we use recursion to search for the pathnames. If we filter a directory, we can never access
+the text files in it. Just Image that cutting down a branch makes all leaves on it gone.
+
+    class Recursion{
+    
+        public ArrayList<File> readFile(File fileInput){
+            ArrayList<File> result = new ArrayList<>();
+    
+            if(!fileInput.isDirectory()){
+                result.add(fileInput);
+                return result;                              
+            }else{
+                for(File y: fileInput.listFiles(new FileFilterImplement())){ // Different 
+                    result.addAll(readFile(y));            
+
+                }
+            }
+            return result;
+        }
+    }
+
+Now, let's go back to the Recursion class and add a new FileFilter into the listFiles. 
+This should work. 
+
+Yeah, pretty cool ehh!
+
+Now, let's see how FilenameFilter works. This time, I will use the anonymous class.
+A very nice approach. 
+
+    class Recursioner{
+    
+        public ArrayList<File> readFile(File fileInput){
+            ArrayList<File> result = new ArrayList<>();
+    
+            if(!fileInput.isDirectory()){
+                result.add(fileInput);
+                return result;
+            }else{
+                for(File y: fileInput.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return new File(dir, name).isDirectory() || name.toLowerCase().endsWith(".txt");
+                    }
+                })){
+                    result.addAll(readFile(y));
+                }
+            }
+            return result;
+        }
+    }
+
+The class Recursioner works the same as the Recursion class. But, we use a more Zhuangbility way for it. 
+That is, we create an inner class inside a Recursioner instead of create another big class for it. We call it anonymous class
+and it can be only used once. 
+
+Please read through the code again and again until you understand what happens. 
+
+A more professional way is to use Lambda!!
+
+    class RecursionLambda{
+        public ArrayList<File> readFile(File fileInput){
+            ArrayList<File> result = new ArrayList<>();
+    
+            if(!fileInput.isDirectory()){
+                result.add(fileInput);
+                return result;
+            }else{
+                for(File y: fileInput.listFiles(pathname -> pathname.isDirectory() || pathname.getName().toLowerCase().endsWith(".txt"))){
+                    result.addAll(readFile(y));
+                }
+            }
+            return result;
+        }
+    }
+    
+Let's look at the class RecursionLambda. We see that the input value is in front of the -> while the return value is after the ->. 
+And we even do not have to declare the reference type of the input value. 
+
+This is the most simplest way of Lambda. 
+
+This is all I want to talk about File. Next, we would go to a brand new field called InputStream and OutputStream. 
+This helps you store the data in your hardware. It really lighten your world.
+
+#Input Stream Or Output Stream 
+
+A hardware can store the data forever. But in an algorithm, all variables and objects will be gone after the code ends if you do not store the data specifically. 
+
+Here, we see how to store or read the data.
+
+Let's see a diagram.
+
+HARDWARE --- Input Stream --> Random Access Memory \
+Random Access Memory --- Output Stream --> HARDWARE
+
+Then you should know that input stream helps you read the file from the HARDWARE while output stream
+helps you store the file from the RAM. 
+
+RAM is the place where you can store the data temporary in the Computer. 
+
+Then, what does stream means? \
+We should know that every data transmits in the form of bytes. That is called stream. 
+
+Let's see the class OutputStream, which is a super class.
+
+This class has many child classes. We will discuss the FileOutputStream here. 
+
+### FileOutputStream
+The function is to write the data from RAM into the hardware. 
+
+There are two constructors for it \
+FileOutputStream(File file)\
+FileOutputStream(String pathname)
+
+The parameter shows the destination of the data we output. 
+
+There are three functions for the constructor. Firstly, create a FileOutputStream object. Secondly, create a file in the 
+pathname position. Thirdly, point the object to the new created file. 
+
+Suppose you are a suspicious person and you don't trust my words... Ok, please go to the FileOutputConstructor class and run the code.
+You can see a new file csc.txt is created. 
+
+    package FileOutputStream;
+    
+    import java.io.File;
+    import java.io.FileNotFoundException;
+    import java.io.FileOutputStream;
+    
+    public class FileOutputConstructor {
+        public static File file1 = new File("csc.txt");
+    
+        public static void main(String[] args) throws FileNotFoundException {
+            FileOutputStream fileOutputStream = new FileOutputStream(file1);
+        }
+    }
+    
+Next we should, of course, know how to write the data into this file. But, how it works?
+
+To make this happens, java should firstly go to the JVM (Java Virtual Evnironment). Then, JVM can access the Operating System.
+After that, OS can call its method that can write the data into the hardware. 
+After that, we can have the authority to write the data. 
+
+OK, we, as a programmer, do not have to go into the computer deeply and see what had happened. Instead, 
+we should know how the input stream works with JAVA. 
+
+You should, firstly, new a FileOutputStream then use the write method to write the data and finally we use the close to release the memory. 
+
+If you don't use the close(), FileOutputStream will occupy lots of resources and it will decrease the efficiency of your program, 
+Yeah, if you donot close then Java will not give you an Exception. But it's a bad program.
+
+Similarly, you should handle the exception named FileNotFoundException (throws OR try catch) when you new a FileOutputStream. And an IOException when you call the write method. 
+
+FileNotFoundException is the child exception of the IOException. 
+
+When we write the integer, the integer will transfer from decimal representation to binary representation. 
+
+An external fact is that when we open the Notepad/ docx ... It will first translate the bytes to character. 
+0 ~ 127 goes to ASCII while Chinese characters goes to GBK. 
+
+
 
 
 
